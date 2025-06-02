@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class WhackMoleActivity extends Activity {
 
     // UI组件
     private TextView scoreText, timeText, gameOverText;
@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_whack_mole);
 
         initViews();
         initGame();
