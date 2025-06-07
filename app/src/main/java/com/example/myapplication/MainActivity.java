@@ -17,19 +17,23 @@ public class MainActivity extends Activity {
 
     // UI组件
     private TextView scoreText, timeText, gameOverText;
-    private Button startButton, restartButton;
+    private Button startButton, restartButton, buttonPause, buttonRestart;
     private ImageView[] holes = new ImageView[9]; // 3x3网格的9个洞穴
 
     // 游戏状态
     private int score = 0;
     private boolean gameRunning = false;
+    private boolean gamePaused = false; // 添加暂停状态
     private CountDownTimer gameTimer;
     private Handler moleHandler = new Handler();
     private Random random = new Random();
     private List<Integer> activeMoles = new ArrayList<>(); // 当前活跃的地鼠位置
 
+    // 暂停相关变量
+    private long remainingTime = 0; // 剩余时间（毫秒）
+
     // 游戏配置
-    private static final int GAME_DURATION = 60000; // 60秒
+    private static final int GAME_DURATION = 20000; // 60秒
     private static final int MOLE_SHOW_DURATION = 2000; // 地鼠显示2秒
     private static final int MOLE_SPAWN_INTERVAL = 1000; // 每1秒可能生成新地鼠
     private static final int HIT_ANIMATION_DURATION = 500; // 被击中动画持续0.5秒
@@ -44,7 +48,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_whack_mole);
 
         initViews();
         initGame();
@@ -57,6 +61,10 @@ public class MainActivity extends Activity {
         gameOverText = findViewById(R.id.gameOverText);
         startButton = findViewById(R.id.startButton);
         restartButton = findViewById(R.id.restartButton);
+
+        // 绑定新添加的按钮
+        buttonPause = findViewById(R.id.buttonPause);
+        buttonRestart = findViewById(R.id.buttonRestart);
 
         // 初始化9个洞穴ImageView
         holes[0] = findViewById(R.id.hole0);
@@ -93,12 +101,34 @@ public class MainActivity extends Activity {
                 restartGame();
             }
         });
+
+        // 添加暂停按钮监听器
+        buttonPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (gameRunning && !gamePaused) {
+                    pauseGame();
+                } else if (gameRunning && gamePaused) {
+                    resumeGame();
+                }
+            }
+        });
+
+        // 添加重新开始按钮监听器
+        buttonRestart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restartGame();
+            }
+        });
     }
 
     private void initGame() {
         // 初始化游戏状态
         score = 0;
         gameRunning = false;
+        gamePaused = false;
+        remainingTime = GAME_DURATION;
         activeMoles.clear();
 
         // 初始化所有洞穴为空
@@ -111,21 +141,40 @@ public class MainActivity extends Activity {
         gameOverText.setVisibility(View.GONE);
         restartButton.setVisibility(View.GONE);
         startButton.setVisibility(View.VISIBLE);
+
+        // 隐藏游戏中的按钮
+        buttonPause.setVisibility(View.GONE);
+        buttonRestart.setVisibility(View.GONE);
     }
 
     private void startGame() {
         gameRunning = true;
+        gamePaused = false;
         score = 0;
+        remainingTime = GAME_DURATION;
         activeMoles.clear();
 
         startButton.setVisibility(View.GONE);
         gameOverText.setVisibility(View.GONE);
         restartButton.setVisibility(View.GONE);
 
+        // 显示游戏中的按钮
+        buttonPause.setVisibility(View.VISIBLE);
+        buttonRestart.setVisibility(View.VISIBLE);
+        buttonPause.setText("暂停");
+
         // 开始游戏倒计时
-        gameTimer = new CountDownTimer(GAME_DURATION, 1000) {
+        startGameTimer();
+
+        // 开始生成地鼠
+        startMoleSpawner();
+    }
+
+    private void startGameTimer() {
+        gameTimer = new CountDownTimer(remainingTime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
+                remainingTime = millisUntilFinished;
                 updateTimeDisplay((int) (millisUntilFinished / 1000));
             }
 
@@ -134,13 +183,42 @@ public class MainActivity extends Activity {
                 endGame();
             }
         }.start();
+    }
 
-        // 开始生成地鼠
+    private void pauseGame() {
+        if (!gameRunning || gamePaused) return;
+
+        gamePaused = true;
+        buttonPause.setText("继续");
+
+        // 停止计时器
+        if (gameTimer != null) {
+            gameTimer.cancel();
+        }
+
+        // 停止地鼠生成
+        moleHandler.removeCallbacksAndMessages(null);
+
+        Toast.makeText(this, "游戏已暂停", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resumeGame() {
+        if (!gameRunning || !gamePaused) return;
+
+        gamePaused = false;
+        buttonPause.setText("暂停");
+
+        // 重新开始计时器
+        startGameTimer();
+
+        // 重新开始地鼠生成
         startMoleSpawner();
+
+        Toast.makeText(this, "游戏继续", Toast.LENGTH_SHORT).show();
     }
 
     private void startMoleSpawner() {
-        if (!gameRunning) return;
+        if (!gameRunning || gamePaused) return;
 
         // 随机决定是否生成新地鼠
         if (random.nextFloat() < 0.6f && activeMoles.size() < 3) {
@@ -157,6 +235,8 @@ public class MainActivity extends Activity {
     }
 
     private void spawnMole() {
+        if (!gameRunning || gamePaused) return;
+
         // 找到空的洞穴
         List<Integer> emptyHoles = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
@@ -193,7 +273,7 @@ public class MainActivity extends Activity {
     }
 
     private void onHoleClicked(int holeIndex) {
-        if (!gameRunning) return;
+        if (!gameRunning || gamePaused) return;
 
         if (moleStates[holeIndex] == MoleState.NORMAL) {
             // 击中地鼠
@@ -219,6 +299,7 @@ public class MainActivity extends Activity {
 
     private void endGame() {
         gameRunning = false;
+        gamePaused = false;
         moleHandler.removeCallbacksAndMessages(null);
 
         // 隐藏所有地鼠
@@ -233,6 +314,10 @@ public class MainActivity extends Activity {
         gameOverText.setVisibility(View.VISIBLE);
         restartButton.setVisibility(View.VISIBLE);
 
+        // 隐藏游戏中的按钮
+        buttonPause.setVisibility(View.GONE);
+        buttonRestart.setVisibility(View.GONE);
+
         Toast.makeText(this, "游戏结束! 得分: " + score, Toast.LENGTH_LONG).show();
     }
 
@@ -246,7 +331,7 @@ public class MainActivity extends Activity {
 
     private void updateUI() {
         updateScoreDisplay();
-        updateTimeDisplay(GAME_DURATION / 1000);
+        updateTimeDisplay((int) (remainingTime / 1000));
     }
 
     private void updateScoreDisplay() {

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="120dp">
 
         <TextView
             android:id="@+id/scoreText"
@@ -28,7 +28,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="时间: 60s"
+            android:text="时间: 20s"
             android:textSize="20sp"
             android:textColor="#2E7D32"
             android:textStyle="bold"
@@ -137,6 +137,7 @@
         android:orientation="vertical"
         android:gravity="center">
 
+        <!-- 开始游戏按钮 -->
         <Button
             android:id="@+id/startButton"
             android:layout_width="200dp"
@@ -147,6 +148,39 @@
             android:background="@drawable/button_background"
             android:layout_marginBottom="10dp" />
 
+        <!-- 游戏中的控制按钮 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="10dp">
+
+            <Button
+                android:id="@+id/buttonPause"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:text="暂停"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_background"
+                android:layout_marginEnd="10dp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/buttonRestart"
+                android:layout_width="120dp"
+                android:layout_height="50dp"
+                android:text="重新开始"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_background"
+                android:layout_marginStart="10dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- 游戏结束后的重新开始按钮 -->
         <Button
             android:id="@+id/restartButton"
             android:layout_width="200dp"
@@ -158,6 +192,7 @@
             android:visibility="gone"
             android:layout_marginBottom="10dp" />
 
+        <!-- 游戏结束文本 -->
         <TextView
             android:id="@+id/gameOverText"
             android:layout_width="wrap_content"
