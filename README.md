@@ -48,18 +48,18 @@
 4.  **构建并运行**:
     *   等待 Gradle 同步完成。
     *   选择一个模拟器或连接一个真实的 Android 设备。
-    *   点击 Android Studio 工具栏上的 "Run 'app'" 按钮 (绿色播放图标)。
+    *   点击 Android Studio 工具栏上的 "Run 'app'" 按钮 。
 
 ## 代码结构 (简要)
 
 *   `MainActivity.java`: 游戏的主要逻辑和界面控制。
 *   `activity_main.xml`: 游戏主界面的布局文件。
 *   `drawable/`: 存放游戏所需的图片资源 (地鼠、洞穴、背景等)。
-*   **(如果使用了Room)**
+* 
     *   `db/`: 包含 Room数据库相关的类 (Entity, DAO, Database)。
-    *   `ScoreHistoryActivity.java`: (如果已实现) 显示分数历史的 Activity。
-    *   `activity_score_history.xml`: (如果已实现) 分数历史页面的布局。
-    *   `ScoreAdapter.java`: (如果已实现) 用于在 RecyclerView 中显示分数的适配器。
+    *   `ScoreHistoryActivity.java`:  显示分数历史的 Activity。
+    *   `activity_score_history.xml`:  分数历史页面的布局。
+    *   `ScoreAdapter.java`:  用于在 RecyclerView 中显示分数的适配器。
 
 ## 未来可能的改进
 
