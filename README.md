@@ -4,6 +4,8 @@
 这是一款简单的打地鼠小游戏，使用 Java 开发。玩家需要在限定时间内尽可能多地击中出现的地鼠来获得高分。
 
 ## 游戏截图
+![屏幕截图 2025-06-08 145912](https://github.com/user-attachments/assets/b55529a7-e62b-430e-85d0-dff37edd144a)
+
 ![image](https://github.com/user-attachments/assets/1a03be36-9742-4777-874b-74426883734b)
 
 
